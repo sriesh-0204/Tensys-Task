@@ -1,0 +1,13 @@
+@import '../../stylesheet//variable.scss';
+
+.primary-color {
+    background-color:$button-color;
+    color: $white;
+    width: 100%;
+    border: unset;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: capitalize;
+    font-family: "Inter", sans-serif;
+}
