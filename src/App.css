@@ -39,3 +39,10 @@ h2{
   font-weight: 700;
   font-family: "Inter", sans-serif;
 }
+
+h4{
+  font-size: 22px;
+  font-weight: 600;
+  font-family: "Inter", sans-serif;
+  text-transform: capitalize;
+}

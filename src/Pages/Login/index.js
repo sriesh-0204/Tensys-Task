@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Component } from "react";
 import { useNavigate } from "react-router-dom";
 import "./index.scss";
 import { Images } from "../../assets/images";
@@ -11,83 +11,97 @@ import Button from "../../Component/Button";
 import { loginPageText } from "../../Constant/loginConstant";
 import Loader from "../../Component/Loader";
 import { IdConstant } from "../../Constant/appConstant";
+import withNavigation from "../../HOC/navigate";
 
-const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [successMessage, setSuccessMessage] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(false);
-  const [loader, setLoader] = useState(false);
-  const auth = getAuth();
-  const navigate = useNavigate();
+class Login extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: "",
+      password: "",
+      successMessage: false,
+      errorMessage: false,
+      loader: false,
+    };
+    this.auth = getAuth();
+  }
 
-  const signIn = (e) => {
-    setLoader(true)
+  setEmail = (e) => {
+    this.setState({ email: e.target.value });
+  };
+
+  setPassword = (e) => {
+    this.setState({ password: e.target.value });
+  };
+
+  signIn = (e) => {
+    this.setState({ loader: true });
     e.preventDefault();
-    signInWithEmailAndPassword(auth, email, password)
+    const { email, password } = this.state;
+    signInWithEmailAndPassword(this.auth, email, password)
       .then((userCredential) => {
         localStorage.setItem("accessToken", JSON.stringify(userCredential?.user?.accessToken));
-        const token = localStorage.getItem("accessToken")
+        const token = localStorage.getItem("accessToken");
         if (token) {
-          setSuccessMessage(true);
-          setLoader(false)
+          this.setState({ successMessage: true, loader: false });
           setTimeout(() => {
-            navigate("/dashboard");
+            this.props.navigate("/dashboard");
           }, 500);
-        } else{
-          setLoader(false);
-          setSuccessMessage(true);
+        } else {
+          this.setState({ successMessage: true, loader: false });
         }
       })
       .catch((error) => {
-        if(error.code === "auth/invalid-credential"){
-          setErrorMessage(true)
-          setLoader(false);
+        if (error.code === "auth/invalid-credential") {
+          this.setState({ errorMessage: true, loader: false });
           setTimeout(() => {
-            setErrorMessage(false)
+            this.setState({ errorMessage: false });
           }, 500);
         }
       });
   };
 
-  return (
-    <div className="login flex justify-center items-center">
-      <div className="login-container w-full lg:w-1/3 mx-4 lg:mx-0 flex justify-center items-center">
-        <div className="login-wrap">
-          <div className="login-form">
-            {successMessage && <div className="success">Success</div>}
-            {errorMessage && <div className="error">Error</div>}
-            <h2 className="pb-8">{loginPageText.WELCOME}</h2>
-            <div className="login-form-validate">
-              <form onSubmit={signIn}>
-                <Input
-                  value={email}
-                  type="text"
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter Name"
-                  name="email"
-                />
-                <Input
-                  value={password}
-                  type="password"
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter Password"
-                  name="password"
-                />
-                <Button
-                  label={loader ? <Loader /> : IdConstant.SUBMIT}
-                  type="submit"
-                />
-              </form>
-              <div onClick={() => navigate("/signup")} className="login-signup">
-                <a>{loginPageText.SIGNUP} </a>
+  render() {
+    const { email, password, successMessage, errorMessage, loader } = this.state;
+    return (
+      <div className="login flex justify-center items-center">
+        <div className="login-container w-full lg:w-1/3 mx-4 lg:mx-0 flex justify-center items-center">
+          <div className="login-wrap">
+            <div className="login-form">
+              {successMessage && <div className="success">Success</div>}
+              {errorMessage && <div className="error">Error</div>}
+              <h2 className="pb-8 text-center">{loginPageText.WELCOME}</h2>
+              <div className="login-form-validate">
+                <form onSubmit={this.signIn}>
+                  <Input
+                    value={email}
+                    type="text"
+                    onChange={this.setEmail}
+                    placeholder="Enter Name"
+                    name="email"
+                  />
+                  <Input
+                    value={password}
+                    type="password"
+                    onChange={this.setPassword}
+                    placeholder="Enter Password"
+                    name="password"
+                  />
+                  <Button
+                    label={loader ? <Loader /> : IdConstant.SUBMIT}
+                    type="submit"
+                  />
+                </form>
+                <div onClick={() => this.props.navigate("/signup")} className="login-signup">
+                  <a>{loginPageText.SIGNUP} </a>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+}
 
-export default Login;
+export default withNavigation(Login);

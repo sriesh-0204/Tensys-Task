@@ -16,4 +16,16 @@
         width: 42%;
         margin: 0 auto;
     }
+
+    &-list{
+        background-color: $white;
+    }
+
+    &-edit-button{
+        background-color: $btn-color;
+    }
+
+    &-delete-button{
+        background-color: $red-color;
+    }
 }
