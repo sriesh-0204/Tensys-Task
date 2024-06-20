@@ -1,7 +1,9 @@
 import React, { PureComponent } from 'react';
+import Select from 'react-select';
 import Header from '../../Layout/Header';
 import Button from '../../Component/Button';
 import { IdConstant } from '../../Constant/appConstant';
+import { AiOutlineClose } from "react-icons/ai";
 import { BsFillPersonDashFill } from "react-icons/bs";
 import './index.scss'
 import Input from '../../Component/Input';
@@ -16,6 +18,12 @@ class Dashboard extends PureComponent {
       description: '',
       assignee: '',
       editIndex: null,
+      assigneeOptions: [
+        { value: 'John Doe', label: 'John Doe' },
+        { value: 'Jane Smith', label: 'Jane Smith' },
+        { value: 'Alice Johnson', label: 'Alice Johnson' },
+        { value: 'Suresh', label: 'Suresh' },
+      ],
     };
   }
 
@@ -34,25 +42,30 @@ class Dashboard extends PureComponent {
     this.setState({ addTask: true });
   };
 
+  handleCloseTask =()=>{
+    this.setState({ addTask: false });
+  }
+
   handleAddTask = () => {
     const { tasks, taskName, description, assignee, editIndex } = this.state;
     if (editIndex !== null) {
       const updatedTasks = tasks.map((task, index) =>
-        index === editIndex ? { name: taskName, assignee, description } : task
+        index === editIndex ? { name: taskName, assignee: assignee.value, description } : task
       );
       this.setState({ tasks: updatedTasks, editIndex: null });
     } else {
-      this.setState({ tasks: [...tasks, { name: taskName, assignee, description }] });
+      this.setState({ tasks: [...tasks, { name: taskName, assignee: assignee.value, description }] });
     }
     this.setState({ taskName: '', assignee: '', description: '', addTask: false });
   };
 
   handleEditTask = (index) => {
-    const { tasks } = this.state;
+    const { tasks, assigneeOptions } = this.state;
+    const selectedAssignee = assigneeOptions.find(option => option.value === tasks[index].assignee);
     this.setState({
       addTask: true,
       taskName: tasks[index].name,
-      assignee: tasks[index].assignee,
+      assignee: selectedAssignee,
       description: tasks[index].description,
       editIndex: index,
     });
@@ -64,8 +77,13 @@ class Dashboard extends PureComponent {
     this.setState({ tasks: updatedTasks });
   };
 
+  isAddTaskDisabled = () => {
+    const { taskName, description, assignee } = this.state;
+    return taskName.trim() === '' || description.trim() === '' || !assignee;
+  };
+
   render() {
-    const { tasks, addTask, taskName, description, assignee, editIndex } = this.state;
+    const { tasks, addTask, taskName, description, assignee, assigneeOptions, editIndex } = this.state;
 
     return (
       <div>
@@ -78,6 +96,9 @@ class Dashboard extends PureComponent {
             {
               addTask && (
                 <div className='dashboard-task p-8'>
+                  <div className='dashboard-close-icon flex justify-end' onClick={this.handleCloseTask}>
+                  <AiOutlineClose />
+                  </div>
                   <h2 className='text-center pb-2'>Task Manager</h2>
                   <div className='dashboard-form flex flex-col'>
                     <Input
@@ -94,14 +115,18 @@ class Dashboard extends PureComponent {
                       value={description}
                       onChange={(e) => this.setState({ description: e.target.value })}
                     />
-                    <Input
-                      label='Assigned To Person'
-                      type='text'
-                      placeholder='Assignee'
+                    <label>Assigned To Person</label>
+                    <Select
+                      options={assigneeOptions}
                       value={assignee}
-                      onChange={(e) => this.setState({ assignee: e.target.value })}
+                      onChange={(selectedOption) => this.setState({ assignee: selectedOption })}
+                      className='mb-4'
                     />
-                    <Button onClick={this.handleAddTask} label={editIndex !== null ? 'Edit Task' : 'Add Task'} />
+                    <Button 
+                      onClick={this.handleAddTask} 
+                      label={editIndex !== null ? 'Edit Task' : 'Add Task'} 
+                      disabled={this.isAddTaskDisabled()} 
+                    />
                   </div>
                 </div>
               )

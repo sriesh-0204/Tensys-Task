@@ -1,0 +1,16 @@
+@import '../stylesheet/variable.scss';
+.success{
+    background-color: $green-color;
+    color: $white;
+    text-align: center;
+    padding: 0.6rem;
+    border-radius: 1rem;
+}
+
+.error{
+    color: $white !important;
+    background-color: $red-color;
+    text-align: center;
+    padding: 0.6rem;
+    border-radius: 1rem;
+}

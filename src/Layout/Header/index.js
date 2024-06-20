@@ -1,9 +1,23 @@
 import React, { Component } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Images } from '../../assets/images';
-import './index.scss'
+import './index.scss';
 import Button from '../../Component/Button';
 import { IdConstant } from '../../Constant/appConstant';
 import { BsBoxArrowInRight } from "react-icons/bs";
+
+const HeaderWrapper = () => {
+    const navigate = useNavigate();
+
+    const removeToken = () => {
+        setTimeout(() => {
+            localStorage.removeItem("accessToken");
+            navigate("/login");
+        }, 3000);
+    };
+
+    return <Header removeToken={removeToken} />;
+};
 
 class Header extends Component {
     render() {
@@ -28,7 +42,7 @@ class Header extends Component {
                             </svg>
                         </h1>
                     </div>
-                    <div className='header-add-button'>
+                    <div className='header-add-button' onClick={this.props.removeToken}>
                         <BsBoxArrowInRight />
                     </div>
                 </div>
@@ -37,4 +51,4 @@ class Header extends Component {
     }
 }
 
-export default Header;
+export default HeaderWrapper;

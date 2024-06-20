@@ -22,16 +22,25 @@ class Login extends Component {
       successMessage: false,
       errorMessage: false,
       loader: false,
+      isFormValid: false,
     };
     this.auth = getAuth();
   }
 
   setEmail = (e) => {
-    this.setState({ email: e.target.value });
+    const email = e.target.value;
+    this.setState({ email }, this.validateForm);
   };
 
   setPassword = (e) => {
-    this.setState({ password: e.target.value });
+    const password = e.target.value;
+    this.setState({ password }, this.validateForm);
+  };
+
+  validateForm = () => {
+    const { email, password } = this.state;
+    const isFormValid = email.trim() !== "" && password.trim() !== "";
+    this.setState({ isFormValid });
   };
 
   signIn = (e) => {
@@ -46,7 +55,7 @@ class Login extends Component {
           this.setState({ successMessage: true, loader: false });
           setTimeout(() => {
             this.props.navigate("/dashboard");
-          }, 500);
+          }, 1000);
         } else {
           this.setState({ successMessage: true, loader: false });
         }
@@ -56,13 +65,13 @@ class Login extends Component {
           this.setState({ errorMessage: true, loader: false });
           setTimeout(() => {
             this.setState({ errorMessage: false });
-          }, 500);
+          }, 1000);
         }
       });
   };
 
   render() {
-    const { email, password, successMessage, errorMessage, loader } = this.state;
+    const { email, password, successMessage, errorMessage, loader, isFormValid } = this.state;
     return (
       <div className="login flex justify-center items-center">
         <div className="login-container w-full lg:w-1/3 mx-4 lg:mx-0 flex justify-center items-center">
@@ -90,6 +99,7 @@ class Login extends Component {
                   <Button
                     label={loader ? <Loader /> : IdConstant.SUBMIT}
                     type="submit"
+                    disabled={!isFormValid}
                   />
                 </form>
                 <div onClick={() => this.props.navigate("/signup")} className="login-signup">

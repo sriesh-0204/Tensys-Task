@@ -3,7 +3,7 @@ import { Images } from '../../assets/images'
 
 function Loader() {
   return (
-    <div>
+    <div className='flex justify-center'>
       <img src={Images.LoaderGif} className="loader" />
     </div>
   )
